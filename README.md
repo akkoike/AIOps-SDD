@@ -26,6 +26,14 @@
   - SDD運用で使うスキル定義
 - [.gitignore](.gitignore)
   - バイナリファイルや中間生成物などの Git 管理除外ルール
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+  - ブランチ、コミット、PR、タグ運用の実務ルール
+- [CHANGELOG.md](CHANGELOG.md)
+  - リリース履歴とバージョン記録
+- [.github/pull_request_template.md](.github/pull_request_template.md)
+  - PR 作成時に使用する標準テンプレート
+- [.github/BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md)
+  - GitHub ブランチ保護設定手順
 
 ## 3. カテゴリ標準構成
 
@@ -87,3 +95,4 @@
 - 最上位方針は [Constitution.md](Constitution.md) を正とし、カテゴリ仕様はこれに準拠して更新してください
 - Office 系の原本（pptx/docx/xlsx/pdf）は Git 管理対象外です（詳細は [.gitignore](.gitignore)）
 - [docs/staging](docs/staging) は中間生成物の一時置き場です。最終成果物は categories 配下に集約してください
+- 実際のバージョン管理運用は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください
