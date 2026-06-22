@@ -12,6 +12,7 @@
 - 本ファイルは「ルーティングと責務定義」を扱い、実装コードや詳細設計は扱わない。
 - 本ファイルに記載する内容は、役割、入出力契約、完了条件、品質ゲート条件に限定する。
 - 実装の具体手順、コード変更内容、実行ログの詳細はカテゴリ配下へ委譲する。
+- ただし、カテゴリに属さない共通スクリプトはリポジトリ直下の `scripts/` 配下に配置する。
   - 実装方針と手順: categories/<category>/02_plan/
   - 実装の実体と変更履歴: categories/<category>/04_implement/
   - 検証証跡と判定根拠: categories/<category>/05_verify/
@@ -32,12 +33,13 @@
 - 12: 統制管理
 
 ### 共通出力先テンプレート
-- 要件: categories/<category>/01_specify/requirements.md
+- 要件: categories/<category>/01_specify/<request-folder>/requirements.md
 - 計画: categories/<category>/02_plan/plan.md
 - タスク: categories/<category>/03_tasks/tasks.md
 - 実装: categories/<category>/04_implement/
 - 検証: categories/<category>/05_verify/verification.md
 - 出力: categories/<category>/output/ または categories/<category>/07_output/
+- 非カテゴリ共通スクリプト: scripts/
 
 ---
 
@@ -135,7 +137,7 @@
 - 証跡リンク
 
 ### 出力先
-- 要件: categories/<category>/01_specify/requirements.md
+- 要件: categories/<category>/01_specify/<request-folder>/requirements.md
 - 計画: categories/<category>/02_plan/plan.md
 - タスク: categories/<category>/03_tasks/tasks.md
 - 検証: categories/<category>/05_verify/verification.md
@@ -203,3 +205,5 @@
   - sdd-router
   - sdd-cat11-cost（または sdd-category-executor with category=11）
   - sdd-quality-gate
+
+
