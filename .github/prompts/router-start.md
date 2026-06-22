@@ -75,10 +75,10 @@
 2. 判定根拠をキーワードベースで明記する。
 3. 更新対象は必ず `categories/<category>/` 配下を使う。
 4. 初回は `01_specify/<依頼内容に応じたフォルダ名>/requirements.md` を起点にする。
-5. `01_specify` 配下に依頼ごとの新規フォルダを作成して、マークダウンを配置する。
+5. `01_specify` だけでなく `02_plan` `03_tasks` `04_implement` `05_verify` `06_migration` `output` も、依頼ごとの新規フォルダ（`<request-folder>`）配下にマークダウンを配置する。
    - フォルダ名は依頼タイトルを英数字ハイフン区切りへ正規化して作成する。
    - 例: `ai-ops-task-web-ui`
-6. 次に `02_plan/plan.md` へ進む条件を明記する。
+6. 次に `02_plan/<request-folder>/plan.md` へ進む条件を明記する。
 7. 最後に sdd-quality-gate をどのタイミングで挿入するか明記する。
 8. 各カテゴリに属さないスクリプトは `scripts/` 配下に新規作成して配置する。
 
@@ -105,9 +105,12 @@
 
 ### 2) 初回更新対象
 - requirements: categories/<category>/01_specify/<request-folder>/requirements.md
-- plan: categories/<category>/02_plan/plan.md
-- tasks: categories/<category>/03_tasks/tasks.md
-- verify: categories/<category>/05_verify/verification.md
+- plan: categories/<category>/02_plan/<request-folder>/plan.md
+- tasks: categories/<category>/03_tasks/<request-folder>/tasks.md
+- implement: categories/<category>/04_implement/<request-folder>/implement.md
+- verify: categories/<category>/05_verify/<request-folder>/verification.md
+- migration: categories/<category>/06_migration/<request-folder>/migration.md
+- output: categories/<category>/output/<request-folder>/result.md
 - common-scripts: scripts/<script-name>.(ps1|py|sh)
 
 ### 3) 今回の着手手順（最大7手順）

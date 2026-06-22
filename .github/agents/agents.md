@@ -34,11 +34,12 @@
 
 ### 共通出力先テンプレート
 - 要件: categories/<category>/01_specify/<request-folder>/requirements.md
-- 計画: categories/<category>/02_plan/plan.md
-- タスク: categories/<category>/03_tasks/tasks.md
-- 実装: categories/<category>/04_implement/
-- 検証: categories/<category>/05_verify/verification.md
-- 出力: categories/<category>/output/ または categories/<category>/07_output/
+- 計画: categories/<category>/02_plan/<request-folder>/plan.md
+- タスク: categories/<category>/03_tasks/<request-folder>/tasks.md
+- 実装: categories/<category>/04_implement/<request-folder>/implement.md
+- 検証: categories/<category>/05_verify/<request-folder>/verification.md
+- 移行: categories/<category>/06_migration/<request-folder>/migration.md
+- 出力: categories/<category>/output/<request-folder>/result.md
 - 非カテゴリ共通スクリプト: scripts/
 
 ---
@@ -138,9 +139,12 @@
 
 ### 出力先
 - 要件: categories/<category>/01_specify/<request-folder>/requirements.md
-- 計画: categories/<category>/02_plan/plan.md
-- タスク: categories/<category>/03_tasks/tasks.md
-- 検証: categories/<category>/05_verify/verification.md
+- 計画: categories/<category>/02_plan/<request-folder>/plan.md
+- タスク: categories/<category>/03_tasks/<request-folder>/tasks.md
+- 実装: categories/<category>/04_implement/<request-folder>/implement.md
+- 検証: categories/<category>/05_verify/<request-folder>/verification.md
+- 移行: categories/<category>/06_migration/<request-folder>/migration.md
+- 出力: categories/<category>/output/<request-folder>/result.md
 
 ### 完了条件
 - Specify に What と Why が明記されている。
@@ -179,7 +183,7 @@
 - 修正後の再チェック手順を提示
 
 ### レポート出力先
-- categories/<category>/05_verify/quality-gate-report.md
+- categories/<category>/05_verify/<request-folder>/quality-gate-report.md
 
 ---
 
