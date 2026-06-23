@@ -131,6 +131,38 @@
 | 11 | コスト管理 | [sdd-cat11-cost.md](../agents/sdd-cat11-cost.md) |
 | 12 | 統制管理 | [sdd-cat12-governance.md](../agents/sdd-cat12-governance.md) |
 
+### カテゴリ別コード生成エージェント実装ファイル（フェーズ1-2: 全カテゴリ実装済）
+| カテゴリID | カテゴリ名 | コード生成エージェント | 機能 |
+|-----------|-----------|-----|------|
+| 01 | 監視_モニタリング | [sdd-code-generator-cat01.md](../agents/sdd-code-generator-cat01.md) | タスク分解からコード生成 → 構文チェック → build.log 出力 |
+| 02 | 運用補佐ツール開発_管理 | [sdd-code-generator-cat02.md](../agents/sdd-code-generator-cat02.md) | 運用自動化スクリプト生成 → 構文チェック → build.log 出力 |
+| 03 | インシデント_障害対応 | [sdd-code-generator-cat03.md](../agents/sdd-code-generator-cat03.md) | 障害対応フロー自動化 → 構文チェック → build.log 出力 |
+| 04 | 問い合わせ対応_サポート | [sdd-code-generator-cat04.md](../agents/sdd-code-generator-cat04.md) | FAQ/回答テンプレート自動生成 → 構文チェック → build.log 出力 |
+| 05 | 変更_リリース管理 | [sdd-code-generator-cat05.md](../agents/sdd-code-generator-cat05.md) | 変更管理ワークフロー生成 → 構文チェック → build.log 出力 |
+| 06 | 構成管理_資産管理 | [sdd-code-generator-cat06.md](../agents/sdd-code-generator-cat06.md) | CMDB同期スクリプト生成 → 構文チェック → build.log 出力 |
+| 07 | セキュリティ管理 | [sdd-code-generator-cat07.md](../agents/sdd-code-generator-cat07.md) | セキュリティスキャン自動化 → 構文チェック → build.log 出力 |
+| 08 | バックアップ_リカバリ | [sdd-code-generator-cat08.md](../agents/sdd-code-generator-cat08.md) | バックアップ/DR自動化 → 構文チェック → build.log 出力 |
+| 09 | キャパシティ管理 | [sdd-code-generator-cat09.md](../agents/sdd-code-generator-cat09.md) | キャパシティ予測自動化 → 構文チェック → build.log 出力 |
+| 10 | 権限管理 | [sdd-code-generator-cat10.md](../agents/sdd-code-generator-cat10.md) | RBAC/アクセス制御自動化 → 構文チェック → build.log 出力 |
+| 11 | コスト管理 | [sdd-code-generator-cat11.md](../agents/sdd-code-generator-cat11.md) | コスト分析自動化 → 構文チェック → build.log 出力 |
+| 12 | 統制管理 | [sdd-code-generator-cat12.md](../agents/sdd-code-generator-cat12.md) | 統制/監査記録自動化 → 構文チェック → build.log 出力 |
+
+### カテゴリ別検証実行エージェント実装ファイル（フェーズ1-2: 全カテゴリ実装済）
+| カテゴリID | カテゴリ名 | 検証実行エージェント | 機能 |
+|-----------|-----------|-----|------|
+| 01 | 監視_モニタリング | [sdd-verifier-cat01.md](../agents/sdd-verifier-cat01.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 02 | 運用補佐ツール開発_管理 | [sdd-verifier-cat02.md](../agents/sdd-verifier-cat02.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 03 | インシデント_障害対応 | [sdd-verifier-cat03.md](../agents/sdd-verifier-cat03.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 04 | 問い合わせ対応_サポート | [sdd-verifier-cat04.md](../agents/sdd-verifier-cat04.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 05 | 変更_リリース管理 | [sdd-verifier-cat05.md](../agents/sdd-verifier-cat05.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 06 | 構成管理_資産管理 | [sdd-verifier-cat06.md](../agents/sdd-verifier-cat06.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 07 | セキュリティ管理 | [sdd-verifier-cat07.md](../agents/sdd-verifier-cat07.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 08 | バックアップ_リカバリ | [sdd-verifier-cat08.md](../agents/sdd-verifier-cat08.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 09 | キャパシティ管理 | [sdd-verifier-cat09.md](../agents/sdd-verifier-cat09.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 10 | 権限管理 | [sdd-verifier-cat10.md](../agents/sdd-verifier-cat10.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 11 | コスト管理 | [sdd-verifier-cat11.md](../agents/sdd-verifier-cat11.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+| 12 | 統制管理 | [sdd-verifier-cat12.md](../agents/sdd-verifier-cat12.md) | 生成コード実行 → 受入条件テスト → test-results.json + verification-log.md 生成 |
+
 ### 入力
 - ユーザー依頼
 - 既存ドキュメント
