@@ -6,9 +6,10 @@
 
 実行方法:
 1. このチャットで「ヒアリング開始」と入力する。
-2. Copilot が 7 つの質問を順番に実施する（各質問で選択肢 + 自由入力）。
-3. 回答内容からカテゴリを自動判定する。
-4. 判定カテゴリの全工程（`01_specify` `02_plan` `03_tasks` `04_implement` `05_verify` `06_migration` `output`）配下ファイルを自動生成/更新する。
+2. `.github/agents/sdd-hearing-subagent-sample.md` に従い、8 つの質問を順番に実施する（各質問で選択肢 + 自由入力）。
+3. 回答内容から `.github/agents/agents.md` の sdd-router によりカテゴリを自動判定する。
+4. 判定されたカテゴリのエージェント実装（例：01 なら `sdd-cat01-monitoring`、03 なら `sdd-cat03-incident`）が配下の全工程（`01_specify` → `02_plan` → `03_tasks` → `04_implement` → `05_verify` → `06_migration` → `output`）のファイルを順番に生成・記入する。
+5. 最後に sdd-quality-gate で品質を確認し、変更ファイル一覧をユーザーへ報告する。
 
 ### オプション 2: 手動実行（プロンプト入力）
 
@@ -19,46 +20,40 @@
 あなたは SDD ルーターです。必ず `.github/agents/agents.md` に従って判定してください。
 
 ## 目的
-新規依頼を 12カテゴリのいずれかに振り分け、最初に更新すべきファイルと次アクションを確定する。
+以下のパイプラインを一気通貫で実行し、依頼に対応する全工程ファイルを生成する。
+
+```
+[STEP 1] ヒアリング
+  sdd-hearing-subagent-sample.md に従い 8 項目を収集する
+      ↓
+[STEP 2] カテゴリ判定
+  agents.md の sdd-router により 01〜12 のカテゴリを判定する
+      ↓
+[STEP 3] 全工程ファイル生成
+  判定カテゴリ別エージェント（sdd-cat01-monitoring / sdd-cat02-ops-tooling / ... / sdd-cat12-governance）により
+  01_specify → 02_plan → 03_tasks → 04_implement → 05_verify → 06_migration → output
+  を順番に生成・記入する
+      ↓
+[STEP 4] 品質ゲート
+  agents.md の sdd-quality-gate により整合チェックを実施する
+      ↓
+[STEP 5] 報告
+  変更ファイル一覧と次アクションをユーザーへ返す
+```
 
 ## 入力（Claude Opus 4.8 でヒアリング）
-以下の手順で、依頼者ヒアリングをサブエージェント呼び出しとして実施してから判定すること。
+以下のサブエージェントを呼び出し、依頼者ヒアリングを実施してから判定すること。
 
-1. `Claude Opus 4.8` サブエージェントを呼び出し、必要情報を質問形式で収集する。
-2. 各質問は「選択肢提示」と「自由入力」の両方をケースバイケースで実施する。
-3. 回答不足がある場合は、同サブエージェントで追加質問を実施する。
-4. 最終的に、下記の入力項目をすべて埋めてからルーター判定を行う。
-
-補足ルール:
-- 各質問は次の順で進める: 1) 選択肢から選んでもらう 2) 選んだ理由や詳細を自由入力してもらう。
-- 選択肢に当てはまらない場合は「その他」を選択して自由入力を必須化する。
-
-### サブエージェント呼び出しテンプレート
+### サブエージェント呼び出し
 - subagent: Claude Opus 4.8
 - mission: SDDカテゴリ判定に必要な要件ヒアリング
-- questions:
-	- 依頼種別:
-		- 選択肢: 新規（新しい仕様を一から組み立てる） / 既存更新（展開済み内容への仕様追加または仕様変更）
-		- 自由入力: 選んだ理由や対象の概要を記載
-	- 依頼タイトル:
-		- 自由入力: 依頼タイトルを具体名で記載
-	- 依頼本文（実現したいこと）:
-		- 自由入力: 実現したい内容を1〜3文で記載
-	- 背景（なぜ必要か）:
-		- 選択肢: 品質課題 / 工数削減 / 障害再発防止 / 監査対応 / コスト圧縮 / 顧客要望 / その他
-		- 自由入力: 背景と発生している課題を記載
-	- 期限/優先度:
-		- 選択肢: 緊急（24時間以内） / 高（今週中） / 中（今月中） / 低（期限柔軟）
-		- 自由入力: 具体期限と優先判断理由を記載
-	- 制約（禁止事項・運用制約・影響許容範囲）:
-		- 選択肢: 本番停止不可 / メンテ時間のみ可 / 追加コスト不可 / 人員固定 / セキュリティ基準厳守 / その他
-		- 自由入力: 制約詳細と許容できる影響範囲を記載
-	- 成果物の期待形（何を作るか）:
-		- 選択肢: Web UI / バッチ・スクリプト / API・バックエンド / 運用手順書（Markdown） / 設計書・仕様書 / Excel・スプレッドシート / PowerPoint・報告資料 / 設定ファイル・IaC / テストコード / 一式対応 / その他
-		- 自由入力: 必要な成果物と納品イメージを記載
-	- 受入条件（テスト粒度）:
-		- 選択肢: ユニットテスト（関数・モジュール単位） / 統合テスト（コンポーネント間連携） / E2Eテスト（画面・フロー全体） / 手動動作確認（目視・手順実行） / レビュー承認のみ / 監査証跡・エビデンス整備 / その他
-		- 自由入力: 合格基準と確認方法を具体的に記載
+- context: [.github/agents/sdd-hearing-subagent-sample.md](../agents/sdd-hearing-subagent-sample.md) に従い、全ヒアリング質問と出力フォーマットを実施する
+
+ヒアリング手順:
+1. サブエージェントに sdd-hearing-subagent-sample.md の実行プロンプトを提供する
+2. 依頼種別・タイトル・本文・背景・期限・制約・成果物・受入条件の8項目をすべて収集する
+3. 回答不足がある場合は、同サブエージェントで追加質問を実施する
+4. 収集結果を下記のヒアリング結果テンプレートに転記する
 
 ### ヒアリング結果（今回の依頼）
 - 依頼種別: {{新規 / 既存更新}}
@@ -133,6 +128,35 @@
 - <確認質問2>
 
 ---
+
+## ▶ ルーター判定後の続行指示
+
+ルーター判定（上記 1)〜6) の出力）が完了したら、**停止せずに直ちに以下を続行すること**。
+
+1. 判定されたカテゴリのエージェント実装ファイルを起動する
+   - **01_監視_モニタリング** → [sdd-cat01-monitoring.md](../agents/sdd-cat01-monitoring.md)
+   - **02_運用補佐ツール開発_管理** → [sdd-cat02-ops-tooling.md](../agents/sdd-cat02-ops-tooling.md)
+   - **03_インシデント_障害対応** → [sdd-cat03-incident.md](../agents/sdd-cat03-incident.md)
+   - **04_問い合わせ対応_サポート** → [sdd-cat04-support.md](../agents/sdd-cat04-support.md)
+   - **05_変更_リリース管理** → [sdd-cat05-change-release.md](../agents/sdd-cat05-change-release.md)
+   - **06_構成管理_資産管理** → [sdd-cat06-config-asset.md](../agents/sdd-cat06-config-asset.md)
+   - **07_セキュリティ管理** → [sdd-cat07-security.md](../agents/sdd-cat07-security.md)
+   - **08_バックアップ_リカバリ** → [sdd-cat08-backup-recovery.md](../agents/sdd-cat08-backup-recovery.md)
+   - **09_キャパシティ管理** → [sdd-cat09-capacity.md](../agents/sdd-cat09-capacity.md)
+   - **10_権限管理** → [sdd-cat10-access.md](../agents/sdd-cat10-access.md)
+   - **11_コスト管理** → [sdd-cat11-cost.md](../agents/sdd-cat11-cost.md)
+   - **12_統制管理** → [sdd-cat12-governance.md](../agents/sdd-cat12-governance.md)
+2. ヒアリング結果と判定カテゴリを入力として渡す
+3. カテゴリ別エージェントは下記の順で全工程ファイルを生成・記入する
+   - `01_specify/<request-folder>/requirements.md` — What / Why / 受入条件
+   - `02_plan/<request-folder>/plan.md` — 実装手順 / 影響範囲 / ロールバック方針
+   - `03_tasks/<request-folder>/tasks.md` — タスク分解 / 優先度 / 担当
+   - `04_implement/<request-folder>/implement.md` — 実装内容 / 変更履歴
+   - `05_verify/<request-folder>/verification.md` — 検証手順 / 証跡リンク
+   - `06_migration/<request-folder>/migration.md` — 展開手順 / 引き継ぎ事項
+   - `output/<request-folder>/result.md` — 最終成果物 / 利用者向け要約
+4. 全工程の生成完了後、`sdd-quality-gate` を実行して品質を確認する
+5. 変更ファイル一覧と次アクションをユーザーへ報告する
 
 ---
 

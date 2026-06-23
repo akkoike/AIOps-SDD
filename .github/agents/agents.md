@@ -113,6 +113,23 @@
 ### 役割
 - 判定されたカテゴリの成果物を作成 更新する。
 - 仕様、設計、タスク、実装、受入、展開、output の全工程で一貫性を維持する。
+- **実装**: 各カテゴリ別エージェント実装ファイルに委譲
+
+### カテゴリ別エージェント実装ファイル
+| カテゴリID | カテゴリ名 | 実装ファイル |
+|-----------|-----------|-----------|
+| 01 | 監視_モニタリング | [sdd-cat01-monitoring.md](../agents/sdd-cat01-monitoring.md) |
+| 02 | 運用補佐ツール開発_管理 | [sdd-cat02-ops-tooling.md](../agents/sdd-cat02-ops-tooling.md) |
+| 03 | インシデント_障害対応 | [sdd-cat03-incident.md](../agents/sdd-cat03-incident.md) |
+| 04 | 問い合わせ対応_サポート | [sdd-cat04-support.md](../agents/sdd-cat04-support.md) |
+| 05 | 変更_リリース管理 | [sdd-cat05-change-release.md](../agents/sdd-cat05-change-release.md) |
+| 06 | 構成管理_資産管理 | [sdd-cat06-config-asset.md](../agents/sdd-cat06-config-asset.md) |
+| 07 | セキュリティ管理 | [sdd-cat07-security.md](../agents/sdd-cat07-security.md) |
+| 08 | バックアップ_リカバリ | [sdd-cat08-backup-recovery.md](../agents/sdd-cat08-backup-recovery.md) |
+| 09 | キャパシティ管理 | [sdd-cat09-capacity.md](../agents/sdd-cat09-capacity.md) |
+| 10 | 権限管理 | [sdd-cat10-access.md](../agents/sdd-cat10-access.md) |
+| 11 | コスト管理 | [sdd-cat11-cost.md](../agents/sdd-cat11-cost.md) |
+| 12 | 統制管理 | [sdd-cat12-governance.md](../agents/sdd-cat12-governance.md) |
 
 ### 入力
 - ユーザー依頼
