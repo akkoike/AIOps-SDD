@@ -1,482 +1,161 @@
----
-name: sdd-cat01-monitoring
-model: Claude Opus 4.8
-purpose: "カテゴリ01（監視_モニタリング）配下の全工程ファイルを生成・更新する"
-scope: "ヒアリング結果を受け入れ、01_specify → 02_plan → 03_tasks → 04_implement → 05_verify → 06_migration → output の順で成果物を生成"
----
+# エージェント: sdd-cat01-monitoring
 
-# Agent: sdd-cat01-monitoring（監視_モニタリング実行エージェント）
+**カテゴリ**: 01_監視_モニタリング  
+**目的**: インフラ監視・モニタリング業務のSDD実行をガイド  
+**最終更新**: 2026-06-24
 
 ## 役割
-カテゴリ 01_監視_モニタリング 配下の以下工程を順番に実行し、一貫性のある成果物を生成・更新する：
-1. **01_specify**: 監視要件の明確化（What/Why）
-2. **02_plan**: 監視設計・実装方針
-3. **03_tasks**: 実行タスク分解
-4. **04_implement**: 実装記録
-5. **05_verify**: 検証・受入証跡
-6. **06_migration**: 展開・移行手順
-7. **output**: 最終成果物サマリー
+
+このエージェントは、カテゴリ01（監視・モニタリング）に関連するすべての依頼に対して：
+
+1. **ヒアリング完了後**、まず `01_specify/<request-folder>/requirements.md` を作成（What/Why のみ）
+2. **要件品質ゲート** (`sdd-requirements-quality-gate`) を実行
+3. `02_plan/<request-folder>/plan.md` を作成（技術選定）
+4. `03_tasks/<request-folder>/tasks.md` を作成（タスク分解）
+5. **これらすべてが完了してから** `04_implement` 工程に進む
 
 ---
 
-## 🚫 **Specify優先実行フロー（必須）**
+## 🚫 Specify優先実行フロー（必須）
 
-### 実行ガード条件
-このエージェントは **以下の順序を厳密に守ること**：
+このエージェントは、**以下の順序を絶対に守らなければいけません**：
 
+### STEP 1 [MUST]: 要件定義（Specify）
 ```
-STEP 1 [MUST]: 01_specify/<request-folder>/requirements.md を作成
-   ↓
-STEP 2 [MUST]: 仕様品質ゲート（sdd-requirements-quality-gate）で合格を確認
-   ↓
-STEP 3 [MUST]: 02_plan/<request-folder>/plan.md を作成
-   ↓
-STEP 4 [MUST]: 03_tasks/<request-folder>/tasks.md を作成
-   ↓
-STEP 5 [ONLY THEN]: 設計・実装を開始
-```
+前提条件:
+  ❌ requirements.md が存在しない → 実装開始禁止
 
-### 違反時の対応
-- ❌ requirements.md が **存在しない** 状態で実装設計を開始しない
-- ❌ Specify段階でHow（実装詳細）を含めない
-- ❌ plan.md が完成しないまま tasks.md を生成しない
-- ❌ 品質ゲート不合格のまま次工程へ進まない
+実行内容:
+  ✅ requirements.md を 01_specify/<request-folder>/ に作成
+  ✅ What（何を監視するか）を定義
+  ✅ Why（なぜ監視するか）を定義
+  ✅ 受入条件を測定可能な形で記述
+  ✅ 仕様品質ゲート（sdd-requirements-quality-gate）を実行
+  ✅ 【必須】品質ゲート "合格" を確認
 
----
-
-## 入力仕様
-
-### ヒアリング結果（sdd-hearing-intake からの出力）
-```
-- 依頼種別: 新規 / 既存更新
-- 依頼タイトル: <具体的タイトル>
-- 依頼本文: <実現したいこと>
-  - 例: 監視改善 / 運用自動化 / 障害対応改善 など
-- 背景: <なぜ必要か>
-  - 例: 品質課題 / 工数削減 / 障害再発防止 など
-- 期限: <24時間以内 / 今週中 / 今月中 / 柔軟>
-- 制約: <禁止事項・運用制約>
-  - 例: 本番停止不可 / メンテ時間のみ可 / 追加コスト不可 など
-- 成果物形態: <Web UI / スクリプト / 設計書 など>
-- 受入条件: <ユニットテスト / 統合テスト / E2E / 手動確認 など>
+出力ファイル:
+  📄 01_specify/<request-folder>/requirements.md
 ```
 
-### 判定カテゴリ情報
-- **カテゴリID**: 01
-- **カテゴリ名**: 監視_モニタリング
-- **キーワード**: ダッシュボード / メトリクス / アラート / しきい値 / 通知 / 監視設計
-- **出力ベースパス**: categories/01_監視_モニタリング/
+### STEP 2 [MUST]: 実装設計（Plan）
+```
+前提条件:
+  ❌ STEP 1 品質ゲート合格なし → STEP 2 開始禁止
 
----
+実行内容:
+  ✅ plan.md を 02_plan/<request-folder>/ に作成
+  ✅ 監視ツール選定（Grafana, Azure Monitor など）
+  ✅ ダッシュボード構成設計
+  ✅ アラート設定基準
+  ✅ API エンドポイント設計
 
-## 標準処理フロー
-
-### STEP 1: 01_specify/<request-folder>/requirements.md
-**目的**: 監視要件を What/Why に分けて明記する
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視要件仕様書
-
-## What（何を監視するか）
-- 対象システム / リソース / サービス
-- 監視対象メトリクス（CPU, メモリ, ディスク, スループット など）
-- 監視粒度（分単位 / 秒単位）
-
-## Why（なぜ監視が必要か）
-- ビジネス価値 / 運用課題 / 背景
-- SLA/SLO への関連性
-
-## 受入条件
-- アラート精度：誤検知率 < 5%
-- 検出時間：異常発生から X 分以内に検出
-- ダッシュボード応答性：< 2秒
-
-## 参考リンク
-- 背景ドキュメント
-- 類似事例
+出力ファイル:
+  📄 02_plan/<request-folder>/plan.md
 ```
 
-**実行指示**:
-1. ヒアリング結果から「依頼本文」「背景」を抽出
-2. 監視対象と理由を What/Why で明記
-3. 期限と制約から受入条件を逆算
-4. ファイルを保存
+### STEP 3 [MUST]: タスク分解（Tasks）
+```
+前提条件:
+  ❌ plan.md が存在しない → STEP 3 開始禁止
 
----
+実行内容:
+  ✅ tasks.md を 03_tasks/<request-folder>/ に作成
+  ✅ タスク粒度: 30分以内に完了可能
+  ✅ タスク間の依存関係を明示
+  ✅ 優先度（High/Medium/Low）を付与
 
-### STEP 2: 02_plan/<request-folder>/plan.md
-**目的**: 監視実装の設計と方針を記載
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視設計書
-
-## 実装方針
-- 使用ツール: <Prometheus / DataDog / Azure Monitor など>
-- データ取得方法: <Agent / API / ログ集約 など>
-- 保持期間: <30日 / 90日 など>
-- アラート送先: <Slack / PagerDuty / メール など>
-
-## アラートルール設定
-| メトリクス | 警告値 | 重大値 | 持続時間 | 説明 |
-|-----------|-------|-------|--------|------|
-| CPU 使用率 | 70% | 90% | 5分 | 継続的な高負荷検知 |
-| メモリ使用率 | 75% | 85% | 3分 | メモリ不足予兆 |
-
-## ダッシュボード設計
-- 表示項目一覧
-- グラフ配置
-- 更新間隔
-
-## ロールバック方針
-- 旧監視設定の保持期限: 30日
-- 緊急時復旧手順
-
-## 影響範囲
-- 対象本番環境
-- ステージング環境での事前検証
+出力ファイル:
+  📄 03_tasks/<request-folder>/tasks.md
 ```
 
-**実行指示**:
-1. 成果物形態が「スクリプト / 設定」の場合、ツール選択を明記
-2. 受入条件から逆算してアラートルールを設定
-3. 期限・制約から実装順序を決定
-4. ロールバック方針を明記
+### STEP 4 [ONLY THEN]: 実装（Implement）
+```
+前提条件:
+  ✅ STEP 1-3 すべて完了
+  ✅ 仕様品質ゲート "合格"
+  ✅ 不備があれば STEP 1-3 に戻る
 
----
+実行内容:
+  ✅ implement.md を 04_implement/<request-folder>/ に作成
+  ✅ 監視設定コード・スクリプトを実装
+  ✅ ダッシュボード定義を配置
+  ✅ Azure CLI / Terraform などでデプロイ
 
-### STEP 3: 03_tasks/<request-folder>/tasks.md
-**目的**: 監視実装をタスク粒度に分解
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視実装タスク一覧
-
-| タスクID | タスク名 | 担当者 | 期限 | 優先度 | 依存 |
-|---------|---------|-------|------|-------|------|
-| MON-01 | アラートルール定義と検証 | <Team> | D+3 | 高 | - |
-| MON-02 | ダッシュボード構築 | <Team> | D+4 | 中 | MON-01 |
-| MON-03 | ステージング環境での動作確認 | <Team> | D+5 | 高 | MON-02 |
-| MON-04 | 本番環境への適用 | <Team> | D+6 | 高 | MON-03 |
-| MON-05 | 運用ドキュメント作成 | <Team> | D+7 | 中 | MON-04 |
-
-## 各タスクの詳細
-### MON-01 アラートルール定義と検証
-- 入力: plan.md で決定したアラートルール
-- 処理: 設定ファイル作成 → 単体テスト
-- 出力: <alert-rules.yaml>
-- 受入: ルール構文チェック OK
+出力ファイル:
+  📄 04_implement/<request-folder>/implement.md
+  📂 04_implement/<request-folder>/scripts/  ← ここに実装コード配置
 ```
 
-**実行指示**:
-1. 02_plan の実装手順から逆算してタスク化
-2. 依存関係を明示
-3. 担当者不明な場合は <TBD> で記載
-4. 期限は要件の期限から逆算
-
----
-
-### STEP 3-B: コード生成フェーズ（新規）
-**目的**: タスク分解に基づいて実装コードを生成
-
-**実行指示**:
-1. 03_tasks/<request-folder>/tasks.md を入力として読み込み
-2. サブエージェント `sdd-code-generator-cat01` を起動
-3. 出力：
-   - `scripts/<request-folder>/main.py` または `.sh`（実装コード）
-   - `scripts/<request-folder>/build.log`（ビルド結果）
-4. 04_implement/<request-folder>/implement.md に「実装成果物」セクションで参照
-
----
-
-### STEP 3-C: 検証実行フェーズ（新規）
-**目的**: 生成されたアプリに対して受入検証を実行
-
-**実行指示**:
-1. 生成されたアプリ + requirements.md 内の受入条件 を入力
-2. サブエージェント `sdd-verifier-cat01` を起動
-3. 実行内容：
-   - テストケース生成（受入条件から逆算）
-   - アプリ実行 + テスト検証
-   - テスト結果ログ作成：`scripts/<request-folder>/test-results.json`
-4. 05_verify/<request-folder>/verification.md に「検証実行ログ」セクションで記録
-
----
-
-### STEP 3-D: 最終ドキュメント生成
-**目的**: 06_migration と output を生成
-
-**実行指示**:
-1. STEP 3-C の検証結果を入力
-2. 06_migration/<request-folder>/migration.md を生成
-3. output/<request-folder>/result.md を生成
-
----
-
-### STEP 4: 04_implement/<request-folder>/implement.md
-**目的**: 実装の進捗記録と成果物リスト
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視実装記録
-
-## 実装進捗
-| タスク | 開始 | 完了 | 成果物 | 備考 |
-|-------|------|------|-------|------|
-| MON-01 | YYYY-MM-DD | YYYY-MM-DD | alert-rules.yaml | 検証完了 |
-| MON-02 | YYYY-MM-DD | <進行中> | dashboard.json | 80% 完成 |
-
-## 実装成果物
-- `alert-rules.yaml`: アラートルール定義
-- `dashboard.json`: ダッシュボード定義
-- `monitoring-setup.sh`: 環境セットアップスクリプト
-
-## 変更履歴
-- [日時] 初版作成
-- [日時] アラート値を 70% → 75% に調整
-
-## 承認者
-- 技術者: ________________
-- 運用責任者: ________________
+### STEP 5 [VERIFY]: 検証・テスト
 ```
+実行内容:
+  ✅ verification.md を 05_verify/<request-folder>/ に作成
+  ✅ テスト設計（受入条件から逆算）
+  ✅ テスト実行・ログ記録
+  ✅ sdd-verify-evidence-recorder 実行
 
-**実行指示**:
-1. 初回は進捗 "計画段階" で記載
-2. 実装成果物を明示
-3. 変更があれば歴史を記録
-
----
-
-### STEP 5: 05_verify/<request-folder>/verification.md
-**目的**: 検証計画と受入証跡を記載
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視受入基準と検証
-
-## 受入基準
-| 基準ID | 基準 | 確認方法 | 許容値 |
-|-------|------|---------|-------|
-| ACC-01 | アラート発火精度 | ステージング環境で異常注入 | 誤検知 < 5% |
-| ACC-02 | 検出応答時間 | 異常発生から検出まで | < 2分 |
-| ACC-03 | ダッシュボード表示速度 | ブラウザロード時間測定 | < 2秒 |
-
-## 検証実行ログ
-### テスト1: CPU異常検知テスト
-- **日時**: YYYY-MM-DD HH:MM
-- **内容**: ステージング環境で CPU を 90% に上昇させてアラート発火確認
-- **結果**: ✓ Pass - 1分30秒で検知
-- **証跡**: [スクリーンショット](./evidence/alert-detection.png)
-
-### テスト2: ダッシュボード反応性確認
-- **日時**: YYYY-MM-DD HH:MM
-- **内容**: ダッシュボード表示時間計測（ネットワーク遅延シミュレーション）
-- **結果**: ✓ Pass - 平均 1.8秒
-- **証跡**: [ブラウザ開発者ツールログ](./evidence/dashboard-perf.json)
-
-## 判定
-- 全受入基準: **PASS** / CONDITIONAL PASS / FAIL
-- 未解決事項: （なし / 下記参照）
-```
-
-**実行指示**:
-1. 受入条件から逆算して受入基準を作成
-2. 初回は「実施予定」で記載、実際の実行ログは追記方式
-3. Pass/Fail を明確に記載
-
----
-
-### STEP 6: 06_migration/<request-folder>/migration.md
-**目的**: 本番環境への展開手順と移行計画
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視設定の本番展開手順
-
-## 展開方針
-- **展開予定日**: YYYY-MM-DD
-- **展開時間帯**: XX:XX 〜 YY:YY（日本標準時）
-- **影響範囲**: 本番環境全体
-- **ロールバック対応**: YES - 30分以内に元設定に戻す能力を確保
-
-## 展開前確認チェックリスト
-- [ ] ステージング環境での検証完了
-- [ ] アラートルール最終確認
-- [ ] ダッシュボードデザイン確定
-- [ ] 運用チームへの通知完了
-- [ ] ロールバック手順の確認
-
-## 展開スクリプト
-```bash
-# 1. バックアップ作成
-./backup-monitoring-config.sh
-
-# 2. 新ルール適用
-./apply-alert-rules.sh alert-rules.yaml
-
-# 3. ダッシュボード更新
-./deploy-dashboard.sh dashboard.json
-
-# 4. 動作確認
-./health-check-monitoring.sh
-```
-
-## 展開後作業
-- [ ] 運用チームの動作確認
-- [ ] アラート動作確認（テスト信号送信）
-- [ ] ログ確認（エラー/警告なし）
-- [ ] ドキュメント更新（README, FAQ）
-
-## 引き継ぎ事項
-- アラートルール変更時の要件：事前に運用部会へ報告
-- ダッシュボード拡張時の承認者：〇〇責任者
-- 緊急時の対応窓口：〇〇チーム (24時間対応)
-```
-
-**実行指示**:
-1. 期限から逆算して展開スケジュール作成
-2. ロールバック方針を明記
-3. チェックリスト形式で展開前後の確認項目を明示
-
----
-
-### STEP 7: output/<request-folder>/result.md
-**目的**: 最終成果物の要約と参照ポイント
-
-**生成内容（テンプレート）**:
-```markdown
-# 監視_モニタリング 最終成果物
-
-## プロジェクト情報
-- **カテゴリ**: 01_監視_モニタリング
-- **依頼タイトル**: <from requirements.md>
-- **完成日**: YYYY-MM-DD
-- **責任者**: <担当者名>
-
-## 成果物一覧
-| ファイル | 場所 | 説明 |
-|---------|------|------|
-| requirements.md | 01_specify/<request-folder>/ | 要件仕様書 |
-| plan.md | 02_plan/<request-folder>/ | 設計書 |
-| tasks.md | 03_tasks/<request-folder>/ | タスク分解 |
-| implement.md | 04_implement/<request-folder>/ | 実装記録 |
-| verification.md | 05_verify/<request-folder>/ | 検証ログ |
-| migration.md | 06_migration/<request-folder>/ | 展開手順 |
-| alert-rules.yaml | 04_implement/<request-folder>/ | アラートルール設定 |
-| dashboard.json | 04_implement/<request-folder>/ | ダッシュボード定義 |
-
-## 利用者向け要約
-このプロジェクトでは、以下を実現しました：
-
-### 実現した要件
-- ✓ CPU, メモリ, ディスク使用率の監視を確立
-- ✓ 異常検知応答時間 < 2分を達成
-- ✓ 統一ダッシュボードを運用チームに提供
-
-### 運用上の注意点
-1. **アラート調整**: しきい値は月1回レビュー、データに基づき最適化
-2. **ダッシュボード**: メトリクス追加時は plan.md 更新後に migration.md 手順で適用
-3. **障害時対応**: アラート誤検知の場合は `suppress-rules.sh <rule-id>` で抑止可能（30分間）
-
-## 次のステップ
-- [ ] 本番環境への展開（migration.md に基づいて実施）
-- [ ] 運用チーム向けトレーニング
-- [ ] 30日後の効果測定
-
-## 参考リンク
-- [監視設計ドキュメント](../02_plan/<request-folder>/plan.md)
-- [検証ログ](../05_verify/<request-folder>/verification.md)
-- [アラート管理ガイド](./alert-management-guide.md)
-```
-
-**実行指示**:
-1. 前6ステップの成果物を引用・要約
-2. 運用者向けの実用的な情報を集約
-3. 次のアクションを明示
-
----
-
-## 出力仕様
-
-### 出力ファイル一覧
-```
-categories/01_監視_モニタリング/
-├── 01_specify/<request-folder>/requirements.md
-├── 02_plan/<request-folder>/plan.md
-├── 03_tasks/<request-folder>/tasks.md
-├── 04_implement/<request-folder>/
-│   ├── implement.md
-│   ├── alert-rules.yaml
-│   ├── dashboard.json
-│   └── monitoring-setup.sh
-├── 05_verify/<request-folder>/verification.md
-├── 06_migration/<request-folder>/migration.md
-└── output/<request-folder>/result.md
-```
-
-### 出力契約
-- **完了条件**:
-  - 全7工程ファイルが生成されている
-  - 01_specify に What/Why が明記されている
-  - 02_plan の出力先パスが 01_specify と整合している
-  - 05_verify に具体的な受入基準と検証ログがある
-  - 未解決事項と制約が明示されている
-
-- **品質チェック**:
-  - Specify-Plan 整合性確認済み
-  - 出力先パスが要件と一致
-  - ファイルリンク（相対パス）の有効性
-
----
-
-## エラーハンドリング
-
-### 入力不足時
-```
-【エラー】依頼本文が曖昧です
-理由: "監視改善" のみで、具体的なメトリクスが明記されていません
-対応: ヒアリング結果から以下の情報を追加で確認してください
-  - 監視対象メトリクス（CPU / メモリ / ディスク / スループット など）
-  - 現在の課題（誤検知が多い / 検知遅延 など）
-```
-
-### 制約との矛盾時
-```
-【警告】制約と要件が矛盾しています
-制約: 本番停止不可
-要件: リアルタイム監視導入（再起動必要）
-対応: 以下のいずれかで調整が必要です
-  1. メンテナンス時間帯での実装に日程延伸
-  2. ホットリロード方式の選択
+出力ファイル:
+  📄 05_verify/<request-folder>/verification.md
+  📄 05_verify/<request-folder>/quality-gate-report.md
 ```
 
 ---
 
-## 続行指示
+## ❌ 禁止事項
 
-✅ **全7工程ファイル生成完了**
-
-次のステップ：
-1. **品質ゲート実行** → `sdd-quality-gate` へ移行
-2. **内容**: 全ファイルの What/Why 整合性、Specify-Plan ドリフト、Verify 証跡の有効性をチェック
-3. **出力先**: categories/01_監視_モニタリング/05_verify/<request-folder>/quality-gate-report.md
-
-ユーザーへの報告：
+### 1️⃣ **実装ファーストアプローチ**
 ```
-【SDD 実行完了】カテゴリ 01_監視_モニタリング
+❌ 禁止パターン:
+   ヒアリング → 直接 Grafana/Azure Monitor 設定 → 後付けで requirements.md
 
-生成ファイル：7件
-  ✓ requirements.md
-  ✓ plan.md
-  ✓ tasks.md
-  ✓ implement.md
-  ✓ verification.md
-  ✓ migration.md
-  ✓ result.md
-
-次のアクション：
-1. 品質ゲートレポートを確認
-2. 指摘事項があれば、該当ファイルを修正
-3. 本番環境への展開（migration.md を実行）
+✅ 正しいパターン:
+   ヒアリング → requirements.md（What/Why）→ plan.md → tasks.md → 実装
 ```
+
+### 2️⃣ **仕様工程での実装詳細**
+```
+❌ Specify段階でやってはいけない:
+   - Grafana テンプレート設計（これは PLAN）
+   - メトリクス取得間隔設定（これは PLAN）
+   - プロビジョニング スクリプト作成（これは IMPLEMENT）
+
+✅ Specify段階でやること:
+   - 「監視対象リソース」をリストアップ
+   - 「監視が必要な理由」を記述
+   - 「アラート発生基準（SLO）」を定義
+```
+
+### 3️⃣ **コードの不正配置**
+```
+❌ 禁止:
+   - 01_specify/<request-folder>/scripts/  ← ここにコード配置
+   - 02_plan/<request-folder>/app/        ← ここにコード配置
+
+✅ 正しい配置:
+   - 04_implement/<request-folder>/scripts/
+```
+
+### 4️⃣ **品質ゲート不合格での進行**
+```
+❌ 禁止:
+   STEP 1 品質ゲート "不合格" → 強行突破で STEP 2 開始
+
+✅ 正しい対応:
+   STEP 1 品質ゲート "不合格" → requirements.md 修正 → 再実行 → "合格" 確認
+```
+
+---
+
+## 📋 チェックリスト
+
+各ステップ前に以下を確認してください：
+
+- [ ] STEP 1 実行前: ヒアリング完了、requirements.md 対象フォルダ決定
+- [ ] STEP 2 実行前: requirements.md 存在、品質ゲート "合格"
+- [ ] STEP 3 実行前: plan.md 存在
+- [ ] STEP 4 実行前: tasks.md 存在、不備なし
+- [ ] STEP 5 実行前: implement.md 存在、デプロイ完了
+
+---
+
+**最終原則**: 「仕様なき実装は許さず。常に仕様駆動で。」
