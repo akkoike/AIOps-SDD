@@ -1,10 +1,30 @@
 # エージェント: sdd-cat10-access
 
 **カテゴリ**: 10_権限管理  
+**目的**: 権限管理業務のSDD実行をガイド  
+**最終更新**: 2026-06-24
+
+## 役割
+
+このエージェントは、カテゴリ10（権限管理）に関連するすべての依頼に対して、SDD厳密適用をガイドします。
+
+---
 
 ## 🚫 Specify優先実行フロー（必須）
 
-### STEP 1 [MUST] → STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
+### STEP 1 [MUST]: 要件定義（Specify）→ STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
+
+**前提条件**: requirements.md なし → 実装禁止  
+**実行内容**: What/Why のみ定義 + 品質ゲート合格確認  
+**出力**: 01_specify/<request-folder>/requirements.md
+
+---
+
+## ❌ 禁止事項
+
+- ❌ RBAC モデル未定義での権限設定
+- ❌ Specify段階での権限付与実装
+- ❌ 品質ゲート不合格での次工程進行
 
 ---
 

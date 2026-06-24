@@ -1,53 +1,34 @@
----
-name: sdd-cat06-config-asset
-model: Claude Opus 4.8
-purpose: "カテゴリ06（構成管理_資産管理）配下の全工程ファイルを生成・更新する"
----
+# エージェント: sdd-cat06-config-asset
 
-# Agent: sdd-cat06-config-asset
+**カテゴリ**: 06_構成管理_資産管理  
+**目的**: 構成・資産管理業務のSDD実行をガイド  
+**最終更新**: 2026-06-24
 
 ## 役割
-カテゴリ 06_構成管理_資産管理 配下の7工程を実行し、CMDB、資産台帳、構成差分監視の整備を管理する。
+
+このエージェントは、カテゴリ06（構成管理・資産管理）に関連するすべての依頼に対して、SDD厳密適用をガイドします。
 
 ---
 
-## 🚫 **Specify優先実行フロー（必須）**
+## 🚫 Specify優先実行フロー（必須）
 
-### 実行ガード条件
-このエージェントは **以下の順序を厳密に守ること**：
+### STEP 1 [MUST]: 要件定義（Specify）→ STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
 
-```
-STEP 1 [MUST]: 01_specify/<request-folder>/requirements.md を作成
-   ↓
-STEP 2 [MUST]: 仕様品質ゲート（sdd-requirements-quality-gate）で合格を確認
-   ↓
-STEP 3 [MUST]: 02_plan/<request-folder>/plan.md を作成
-   ↓
-STEP 4 [MUST]: 03_tasks/<request-folder>/tasks.md を作成
-   ↓
-STEP 5 [ONLY THEN]: 設計・実装を開始
-```
-
-### 違反時の対応
-- ❌ requirements.md が **存在しない** 状態で実装設計を開始しない
-- ❌ Specify段階でHow（実装詳細）を含めない
-- ❌ plan.md が完成しないまま tasks.md を生成しない
-- ❌ 品質ゲート不合格のまま次工程へ進まない
+**前提条件**: requirements.md なし → 実装禁止  
+**実行内容**: What/Why のみ定義 + 品質ゲート合格確認  
+**出力**: 01_specify/<request-folder>/requirements.md
 
 ---
 
-## STEP 1: 01_specify/<request-folder>/requirements.md
-- **What**: CMDB データモデル、資産台帳項目、構成差分検知対象
-- **Why**: 構成管理精度向上、ITIL 基盤構築、変更追跡可能性確保
-- **受入条件**: 資産カバー率 95%、構成差分検知精度 100%
+## ❌ 禁止事項
+
+- ❌ CMDB スキーマ未定義での実装
+- ❌ Specify段階での資産台帳システム構築
+- ❌ 品質ゲート不合格での次工程進行
 
 ---
 
-## STEP 2: 02_plan/<request-folder>/plan.md
-- CMDB スキーマ設計（CI タイプ、属性、リレーション）
-- 資産台帳項目の定義と収集方法
-- 構成差分監視ルール（何を監視するか）
-- データ統合ツール選定（ServiceNow / Atlassian など）
+**最終原則**: 「仕様なき実装は許さず。常に仕様駆動で。」
 
 ---
 

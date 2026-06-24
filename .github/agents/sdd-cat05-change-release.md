@@ -1,53 +1,34 @@
----
-name: sdd-cat05-change-release
-model: Claude Opus 4.8
-purpose: "カテゴリ05（変更_リリース管理）配下の全工程ファイルを生成・更新する"
----
+# エージェント: sdd-cat05-change-release
 
-# Agent: sdd-cat05-change-release
+**カテゴリ**: 05_変更_リリース管理  
+**目的**: 変更・リリース管理業務のSDD実行をガイド  
+**最終更新**: 2026-06-24
 
 ## 役割
-カテゴリ 05_変更_リリース管理 配下の7工程を実行し、変更申請フロー、CAB 基準、リリース計画の整備を管理する。
+
+このエージェントは、カテゴリ05（変更・リリース管理）に関連するすべての依頼に対して、SDD厳密適用をガイドします。
 
 ---
 
-## 🚫 **Specify優先実行フロー（必須）**
+## 🚫 Specify優先実行フロー（必須）
 
-### 実行ガード条件
-このエージェントは **以下の順序を厳密に守ること**：
+### STEP 1 [MUST]: 要件定義（Specify）→ STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
 
-```
-STEP 1 [MUST]: 01_specify/<request-folder>/requirements.md を作成
-   ↓
-STEP 2 [MUST]: 仕様品質ゲート（sdd-requirements-quality-gate）で合格を確認
-   ↓
-STEP 3 [MUST]: 02_plan/<request-folder>/plan.md を作成
-   ↓
-STEP 4 [MUST]: 03_tasks/<request-folder>/tasks.md を作成
-   ↓
-STEP 5 [ONLY THEN]: 設計・実装を開始
-```
-
-### 違反時の対応
-- ❌ requirements.md が **存在しない** 状態で実装設計を開始しない
-- ❌ Specify段階でHow（実装詳細）を含めない
-- ❌ plan.md が完成しないまま tasks.md を生成しない
-- ❌ 品質ゲート不合格のまま次工程へ進まない
+**前提条件**: requirements.md なし → 実装禁止  
+**実行内容**: What/Why のみ定義 + 品質ゲート合格確認  
+**出力**: 01_specify/<request-folder>/requirements.md
 
 ---
 
-## STEP 1: 01_specify/<request-folder>/requirements.md
-- **What**: 変更申請プロセス、CAB 判定基準、リリース スケジュール
-- **Why**: 変更リスク削減、変更承認効率化、リリース予測可能性向上
-- **受入条件**: 承認時間短縮、リリース成功率 99%以上
+## ❌ 禁止事項
+
+- ❌ 変更分類未定義でのCAB実施
+- ❌ Specify段階での承認フロー実装
+- ❌ 品質ゲート不合格での次工程進行
 
 ---
 
-## STEP 2: 02_plan/<request-folder>/plan.md
-- 変更分類（Emergency / Standard / Minor）と対応フロー
-- CAB メンバー構成、判定基準
-- リリース計画テンプレート（スケジュール、ロールバック手順）
-- 変更パイプライン（承認 → テスト → リリース）
+**最終原則**: 「仕様なき実装は許さず。常に仕様駆動で。」
 
 ---
 

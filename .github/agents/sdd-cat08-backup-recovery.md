@@ -1,53 +1,34 @@
----
-name: sdd-cat08-backup-recovery
-model: Claude Opus 4.8
-purpose: "カテゴリ08（バックアップ_リカバリ）配下の全工程ファイルを生成・更新する"
----
+# エージェント: sdd-cat08-backup-recovery
 
-# Agent: sdd-cat08-backup-recovery
+**カテゴリ**: 08_バックアップ_リカバリ  
+**目的**: バックアップ・リカバリ業務のSDD実行をガイド  
+**最終更新**: 2026-06-24
 
 ## 役割
-カテゴリ 08_バックアップ_リカバリ 配下の7工程を実行し、バックアップ戦略、DR 計画、RPO/RTO の整備を管理する。
+
+このエージェントは、カテゴリ08（バックアップ・リカバリ）に関連するすべての依頼に対して、SDD厳密適用をガイドします。
 
 ---
 
-## 🚫 **Specify優先実行フロー（必須）**
+## 🚫 Specify優先実行フロー（必須）
 
-### 実行ガード条件
-このエージェントは **以下の順序を厳密に守ること**：
+### STEP 1 [MUST]: 要件定義（Specify）→ STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
 
-```
-STEP 1 [MUST]: 01_specify/<request-folder>/requirements.md を作成
-   ↓
-STEP 2 [MUST]: 仕様品質ゲート（sdd-requirements-quality-gate）で合格を確認
-   ↓
-STEP 3 [MUST]: 02_plan/<request-folder>/plan.md を作成
-   ↓
-STEP 4 [MUST]: 03_tasks/<request-folder>/tasks.md を作成
-   ↓
-STEP 5 [ONLY THEN]: 設計・実装を開始
-```
-
-### 違反時の対応
-- ❌ requirements.md が **存在しない** 状態で実装設計を開始しない
-- ❌ Specify段階でHow（実装詳細）を含めない
-- ❌ plan.md が完成しないまま tasks.md を生成しない
-- ❌ 品質ゲート不合格のまま次工程へ進まない
+**前提条件**: requirements.md なし → 実装禁止  
+**実行内容**: What/Why のみ定義 + 品質ゲート合格確認  
+**出力**: 01_specify/<request-folder>/requirements.md
 
 ---
 
-## STEP 1: 01_specify/<request-folder>/requirements.md
-- **What**: バックアップ対象、スケジュール、RPO/RTO 目標、DR 範囲
-- **Why**: ビジネス継続性確保、データ喪失防止、規制対応
-- **受入条件**: RPO 達成、RTO 達成、復旧成功率 99%
+## ❌ 禁止事項
+
+- ❌ RPO/RTO 未定義でのバックアップ実装
+- ❌ Specify段階でのバックアップツール導入
+- ❌ 品質ゲート不合格での次工程進行
 
 ---
 
-## STEP 2: 02_plan/<request-folder>/plan.md
-- バックアップ分類（フル / 増分 / 差分）と保持ポリシー
-- ストレージ戦略（ローカル / リモート / クラウド）
-- DR 計画（フェイルオーバー手順、復旧優先度）
-- 復旧テスト計画と実績管理
+**最終原則**: 「仕様なき実装は許さず。常に仕様駆動で。」
 
 ---
 

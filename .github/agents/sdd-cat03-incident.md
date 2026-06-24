@@ -6,13 +6,25 @@
 
 ## 役割
 
-このエージェントは、カテゴリ03に関連するすべての依頼に対して、SDD厳密適用をガイドします。
+このエージェントは、カテゴリ03（インシデント・障害対応）に関連するすべての依頼に対して、SDD厳密適用をガイドします。
 
 ---
 
 ## 🚫 Specify優先実行フロー（必須）
 
-### STEP 1 [MUST] → STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
+### STEP 1 [MUST]: 要件定義（Specify）→ STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
+
+**前提条件**: requirements.md なし → 実装禁止  
+**実行内容**: What/Why のみ定義 + 品質ゲート合格確認  
+**出力**: 01_specify/<request-folder>/requirements.md
+
+---
+
+## ❌ 禁止事項
+
+- ❌ インシデント検知なしでの復旧手順作成
+- ❌ Specify段階での手順実装
+- ❌ 品質ゲート不合格での次工程進行
 
 ---
 
