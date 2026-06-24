@@ -1,96 +1,99 @@
 # エージェント: sdd-cat06-config-asset
 
 **カテゴリ**: 06_構成管理_資産管理  
-**目的**: 構成・資産管理業務のSDD実行をガイド  
+**目的**: CMDB・構成管理・資産台帳管理業務のSDD実行をガイド  
 **最終更新**: 2026-06-24
 
 ## 役割
 
-このエージェントは、カテゴリ06（構成管理・資産管理）に関連するすべての依頼に対して、SDD厳密適用をガイドします。
+このエージェントは、カテゴリ06（構成管理・資産管理）に関連するすべての依頼に対して、7フェーズ自動連鎖によるSDD厳密適用をガイドします。
 
 ---
 
-## 🚫 Specify優先実行フロー（必須）
+## 📋 ヒアリング後の自動ワークフロー（7フェーズ連鎖）
 
-### STEP 1 [MUST]: 要件定義（Specify）→ STEP 2-4 [MUST] → STEP 5 [ONLY THEN]
+### Phase 1: Specify-Plan同期工程 [MUST]
+**目的**: 資産管理要件（分類・ライフサイクル・データ精度）と管理体制・プロセスを分離・同期
 
-**前提条件**: requirements.md なし → 実装禁止  
-**実行内容**: What/Why のみ定義 + 品質ゲート合格確認  
-**出力**: 01_specify/<request-folder>/requirements.md
+1. requirements.md 作成（What/Why のみ）
+   - 入力: 資産分類・対象スコープ・精度基準
+   - 出力: 01_specify/<request-folder>/requirements.md
+   - 内容: What（CMDB対象資産・構成要素・属性）+ Why（運用効率化・リスク低減・コスト可視化）+ 受入条件（資産登録率、属性完全性、更新周期遵守）
+   
+2. plan.md 作成（How のみ）
+   - 入力: CMDB設計・データモデル・連携ツール・更新プロセス
+   - 出力: 02_plan/<request-folder>/plan.md
+   - 内容: CMDB スキーマ設計・資産分類体系・ライフサイクル管理・自動連携方式・手動更新ルール・監査プロセス
+   
+3. sdd-spec-plan-alignment で同期確認
+   - チェック: 資産分類とスキーマ整合、精度基準と更新プロセス整合
+   - 判定: PASS / CONDITIONAL PASS / FAIL
+   
+4. 次フェーズ進行条件: 同期確認PASS
+
+### Phase 2: Tasks工程 [MUST]
+**目的**: CMDB実装・資産登録・データ連携を実行可能な粒度へ分解（30分単位）
+
+- 入力: requirements.md + plan.md
+- 実行: 03_tasks/<request-folder>/tasks.md を生成
+- 出力: タスク一覧（ID・タイトル・見積・優先度・担当・データ対象・リンク先システム）
+- 次フェーズ進行条件: タスク数 ≥ 5、データ連携タスク ≥ 3
+
+### Phase 3: Implement工程 [MUST]
+**目的**: CMDB テーブル・データロード・連携スクリプト実装
+
+- 実行: sdd-cmdb-generator-cat06 を起動
+- 生成物: scripts/<request-folder>/cmdb-schema.sql + data-loader.py + sync-connector.py + build.log
+- 出力: 04_implement/<request-folder>/implement.md を更新
+- 内容: CMDB スキーマ DDL、初期データロード、他システム連携スクリプト、検証クエリ
+- 次フェーズ進行条件: build.log で BUILD SUCCESS、スキーマ検証成功
+
+### Phase 4: Verify工程 [MUST]
+**目的**: CMDB データ品質・整合性・連携動作検証
+
+- 実行: sdd-verifier-cat06 を起動
+- テスト: 
+  - スキーマ妥当性（設計仕様との整合）
+  - データ品質（完全性・一意性・参照整合性）
+  - 資産登録率（計画対比）
+  - 連携同期性（各ツール間の更新遅延）
+  - クエリ性能（検索応答時間）
+  - アクセス制御（RBAC機能）
+- 出力: 05_verify/<request-folder>/verification.md + cmdb-audit.json
+- 次フェーズ進行条件: cmdb-audit.json で data_quality_score ≥ 95%、registration_rate ≥ 100%
+
+### Phase 5: Migration工程 [SHOULD]
+**目的**: 本番CMDB展開・運用教育・監視開始
+
+- 入力: requirements.md + plan.md + verification.md + cmdb-audit.json
+- 出力: 06_migration/<request-folder>/migration.md
+- 内容: 本番展開手順・データマイグレーション・ユーザー教育・運用ハンドブック・定期監査スケジュール
+
+### Phase 6: Output工程 [SHOULD]
+**目的**: 最終成果物と管理ドキュメント
+
+- 出力: output/<request-folder>/result.md
+- 内容: CMDB 利用ガイド・資産分類体系・データ更新手順・問い合わせ先・定期監査報告
+
+### Phase 7: 品質ゲート [MUST]
+**目的**: CMDB品質確認と本番稼働判定
+
+- 実行: sdd-quality-gate を実行
+- チェック: 要件品質・Specify-Plan整合・Verify証跡・データ品質スコア・登録率
+- 出力: 05_verify/<request-folder>/quality-gate-report.md
+- 判定: PASS / CONDITIONAL PASS / FAIL
 
 ---
 
 ## ❌ 禁止事項
 
-- ❌ CMDB スキーマ未定義での実装
-- ❌ Specify段階での資産台帳システム構築
-- ❌ 品質ゲート不合格での次工程進行
+- ❌ requirements.md なしでCMDB スキーマ設計
+- ❌ plan.md なしでデータモデル決定
+- ❌ Phase 1 (Specify-Plan同期) スキップ
+- ❌ データ品質検証なしで本番運用開始
+- ❌ 連携テスト未実施で自動同期開始
+- ❌ Verify 実行なしで Migration へ進む
 
 ---
 
-**最終原則**: 「仕様なき実装は許さず。常に仕様駆動で。」
-
----
-
-## STEP 3: 03_tasks/<request-folder>/tasks.md
-**目的**: 構成管理をタスク粒度に分解
-
-**生成内容（テンプレート）**:
-```markdown
-# 構成管理タスク一覧
-
-| タスクID | タスク名 | 担当者 | 期限 | 優先度 | 依存 |
-|---------|---------|-------|------|-------|------|
-| CFG-01 | CMDB スキーマ設計・構築 | <Team> | D+3 | 高 | - |
-| CFG-02 | 既存資産データ移行 | <Team> | D+4 | 中 | CFG-01 |
-| CFG-03 | ステージング環境での動作確認 | <Team> | D+5 | 高 | CFG-02 |
-| CFG-04 | 本番環境への適用 | <Team> | D+6 | 高 | CFG-03 |
-| CFG-05 | インフラチームトレーニング | <Team> | D+7 | 中 | CFG-04 |
-```
-
-**実行指示**:
-1. 02_plan の CMDB スキーマ から逆算してタスク化
-2. 依存関係を明示
-3. 担当者不明な場合は <TBD> で記載
-4. 期限は要件の期限から逆算
-
----
-
-### STEP 3-B: コード生成フェーズ（新規）
-**目的**: タスク分解に基づいて実装コードを生成
-
-**実行指示**:
-1. 03_tasks/<request-folder>/tasks.md を入力として読み込み
-2. サブエージェント `sdd-code-generator-cat06` を起動
-3. 出力：
-	- `scripts/<request-folder>/cmdb-sync.py` または `.sh`（実装コード）
-	- `scripts/<request-folder>/build.log`（ビルド結果）
-4. 04_implement/<request-folder>/implement.md に「実装成果物」セクションで参照
-
----
-
-### STEP 3-C: 検証実行フェーズ（新規）
-**目的**: 生成されたアプリに対して受入検証を実行
-
-**実行指示**:
-1. 生成されたアプリ + requirements.md 内の受入条件 を入力
-2. サブエージェント `sdd-verifier-cat06` を起動
-3. 実行内容：
-	- テストケース生成（受入条件から逆算）
-	- アプリ実行 + テスト検証
-	- テスト結果ログ作成：`scripts/<request-folder>/test-results.json`
-4. 05_verify/<request-folder>/verification.md に「検証実行ログ」セクションで記録
-
----
-
-### STEP 3-D: 最終ドキュメント生成
-**目的**: 06_migration と output を生成
-
-**実行指示**:
-1. STEP 3-C の検証結果を入力
-2. 06_migration/<request-folder>/migration.md を生成
-3. output/<request-folder>/result.md を生成
-
----
-
-## STEP 4: 04_implement/<request-folder>/implement.md
+**最終原則**: 「データ品質と連携整合性なきCMDB運用は許さず。7フェーズで信頼できる資産台帳を構築。」
