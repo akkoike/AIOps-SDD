@@ -1,6 +1,6 @@
 # CHANGELOG
 
-AIOps-SDD のすべての重要な変更をこのファイルで記録します。
+AIOps-AIDLC のすべての重要な変更をこのファイルで記録します。
 
 形式は [Keep a Changelog](https://keepachangelog.com/ja/1.0.0/) に準拠しています。
 

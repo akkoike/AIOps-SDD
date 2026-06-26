@@ -1,4 +1,4 @@
-# AIOps-SDD ワークスペース利用ガイド
+# AIOps-AIDLC ワークスペース利用ガイド
 
 このリポジトリは、運用業務ドキュメントを SDD（Specification Driven Development）形式で整理し、AI 駆動ワークフローで12カテゴリの要件定義から成果物出力までを一貫管理するためのワークスペースです。
 
