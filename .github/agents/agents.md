@@ -69,6 +69,9 @@
 - 移行: categories/<category>/06_migration/<request-folder>/migration.md
 - 出力: categories/<category>/output/<request-folder>/result.md
 - 非カテゴリ共通スクリプト: scripts/
+- 依頼種別による `<request-folder>` の扱い:
+  - 新規: 依頼タイトルを正規化した新規フォルダを作成する。
+  - 既存更新: 新規フォルダを作成せず、ヒアリングで特定した既存フォルダを読み込み上書きする。
 
 ---
 
@@ -123,7 +126,9 @@
 ### 実行フロー
 1. 依頼から目的、制約、期待成果物を抽出する。
 2. カテゴリを判定する。
-3. 該当カテゴリエージェントへ委譲し、`01_specify` から `output` までの全工程を生成する。
+3. **依頼種別を判定する（新規 / 既存更新）**。
+   - **新規**: 該当カテゴリエージェントへ委譲し、依頼タイトルを正規化した**新規 request-folder** 配下に `01_specify` から `output` までの全工程を生成する。
+   - **既存更新**: ヒアリングで特定した**既存 request-folder** を対象として委譲する。**新規フォルダを作成せず**、対象フォルダ配下の既存 7 工程ファイルを読み込み、操作種別（追加/修正/削除/複合）に従って反映し、同じフォルダへ上書き保存する。
 4. 実装成果物は `categories/<category>/04_implement/<request-folder>/` を正とし、`tools/` 単独配置で完了扱いにしない。
 5. 品質ゲートを実行する。
 6. 変更ファイルと次アクションをユーザーへ返す。
@@ -255,6 +260,13 @@
 - 既存ドキュメント
 - 運用制約（SLA、SLO、体制、時間帯、依存関係）
 - カテゴリID（01から12）
+- **依頼種別（新規 / 既存更新）**
+- **対象 request-folder（既存更新時はヒアリングで特定した既存フォルダ名）**
+- **操作種別（既存更新時：追加 / 修正 / 削除 / 複合）**
+
+### 依頼種別による分岐（必須）
+- **新規**: 依頼タイトルを正規化した**新規 request-folder** を作成し、7工程を新規生成する。
+- **既存更新**: **新規 request-folder を作成せず**、対象の既存 request-folder 配下の各工程ファイル（requirements/plan/tasks/implement/verification/migration/result および `04_implement` のアプリ本体）を**読み込んでから**、操作種別に従って差分を反映し、**同じフォルダへ上書き保存**する。読み込まずに上書きしてはならない。
 
 ### 標準アクション
 1. Specify を更新
@@ -289,6 +301,7 @@
 - 検証: categories/<category>/05_verify/<request-folder>/verification.md
 - 移行: categories/<category>/06_migration/<request-folder>/migration.md
 - 出力: categories/<category>/output/<request-folder>/result.md
+- **既存更新時の注意**: `<request-folder>` はヒアリングで特定した**既存フォルダ**を指す。新規フォルダは作らず、既存ファイルを読み込んで上書きする。
 
 ### 完了条件
 - Specify に What と Why が明記されている。

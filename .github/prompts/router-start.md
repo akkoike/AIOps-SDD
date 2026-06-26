@@ -7,6 +7,7 @@
 実行方法:
 1. このチャットで「ヒアリング開始」と入力する。
 2. `.github/agents/sdd-hearing-subagent-sample.md` に従い、8 つの質問を順番に実施する（各質問で選択肢 + 自由入力）。
+   - **依頼種別で「既存更新」が選ばれた場合は**、カテゴリ仮判定後に対象カテゴリ配下の既存 request-folder を列挙し、どのテーマを対象に「追加/修正/削除」するかを選択させる。
 3. 回答内容から `.github/agents/agents.md` の sdd-router によりカテゴリを自動判定する。
 4. 判定されたカテゴリのエージェント実装（例：01 なら `sdd-cat01-monitoring`、02 なら `sdd-cat02-ops-tooling`）が以下の 7 フェーズを **自動連鎖** で実行：
    - **Phase 1**: Specify-Plan同期工程 → requirements.md (What/Why) + plan.md (How) 同時生成 + sdd-spec-plan-alignment で同期確認
@@ -66,6 +67,8 @@
 
 ### ヒアリング結果（今回の依頼）
 - 依頼種別: {{新規 / 既存更新}}
+- 対象テーマ（既存更新時のみ）: {{既存 request-folder 名 / 新規の場合は「該当なし」}}
+- 操作種別（既存更新時のみ）: {{追加 / 修正 / 削除 / 複合 / 新規の場合は「該当なし」}}
 - 依頼タイトル: {{依頼タイトル}}
 - 依頼本文: {{依頼本文}}
 - 背景: {{背景}}
@@ -78,8 +81,10 @@
 1. まずカテゴリを 01〜12 から1つ選ぶ（複数候補がある場合は第1候補と第2候補を提示）。
 2. 判定根拠をキーワードベースで明記する。
 3. 更新対象は必ず `categories/<category>/` 配下を使う。
-4. 初回から `01_specify` `02_plan` `03_tasks` `04_implement` `05_verify` `06_migration` `output` の全工程を更新対象に含める。
-5. `01_specify` だけでなく `02_plan` `03_tasks` `04_implement` `05_verify` `06_migration` `output` も、依頼ごとの新規フォルダ（`<request-folder>`）配下にマークダウンを配置する。
+4. **依頼種別により request-folder の扱いを分岐させる（必須）**。
+   - **新規**: 初回から `01_specify` `02_plan` `03_tasks` `04_implement` `05_verify` `06_migration` `output` の全工程を、依頼タイトルを正規化した**新しい request-folder**配下に作成する。
+   - **既存更新**: **新規 request-folder を作成せず**、ヒアリングで特定した**既存 request-folder** を対象とする。同フォルダ配下の既存 7 工程ファイルを読み込み、操作種別（追加/修正/削除）に従って内容を反映し、**同じフォルダへ上書き保存**する。
+5. 新規の場合のみ、`01_specify` だけでなく `02_plan` `03_tasks` `04_implement` `05_verify` `06_migration` `output` も、依頼ごとの新規フォルダ（`<request-folder>`）配下にマークダウンを配置する。
    - フォルダ名は依頼タイトルを英数字ハイフン区切りへ正規化して作成する。
    - 例: `ai-ops-task-web-ui`
 6. 次に `02_plan/<request-folder>/plan.md` へ進む条件を明記する。
@@ -111,6 +116,9 @@
 - 判定根拠キーワード: <3〜8個>
 
 ### 2) 初回更新対象
+- 依頼種別: <新規 / 既存更新>
+- 対象 request-folder: <既存更新時は既存フォルダ名 / 新規時は正規化した新規フォルダ名>
+- 操作種別: <既存更新時は 追加/修正/削除/複合 / 新規時は「新規作成」>
 - requirements: categories/<category>/01_specify/<request-folder>/requirements.md
 - plan: categories/<category>/02_plan/<request-folder>/plan.md
 - tasks: categories/<category>/03_tasks/<request-folder>/tasks.md
@@ -119,6 +127,7 @@
 - migration: categories/<category>/06_migration/<request-folder>/migration.md
 - output: categories/<category>/output/<request-folder>/result.md
 - common-scripts: scripts/<script-name>.(ps1|py|sh)
+- 備考（既存更新時）: 上記パスの `<request-folder>` は**既存フォルダ**を指す。新規フォルダは作成せず、既存ファイルを読み込んで反映する。
 
 ### 3) 今回の着手手順（最大7手順）
 1. <手順>
