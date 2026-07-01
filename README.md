@@ -2,6 +2,17 @@
 
 このリポジトリは、運用業務ドキュメントを SDD（Specification Driven Development）形式で整理し、AI 駆動ワークフローで12カテゴリの要件定義から成果物出力までを一貫管理するためのワークスペースです。
 
+## 🚀 クイックスタート（まずはここから）
+
+**動かす手順はこれだけです。**
+
+1. Copilot Chat で [.github/prompts/router-start.md](.github/prompts/router-start.md) を開いて実行する
+2. チャットに **「ヒアリングをはじめてください」** と入力する
+3. 対話で 8 項目（依頼種別・タイトル・本文・背景・期限・制約・成果物・受入条件）に回答する
+4. カテゴリが自動判定され、7 工程（Specify → Plan → Tasks → Implement → Verify → Migration → Output）が自動生成される
+
+> 詳しい実行フローは「[4. SDD パイプライン実行フロー](#4-sdd-パイプライン実行フロー推奨)」を参照してください。
+
 ## 1. 目的
 
 - 運用依頼をヒアリング → カテゴリ判定 → 7工程全自動実行する SDD パイプラインの提供
@@ -35,7 +46,7 @@
 - [sdd-cat07-security.md](.github/agents/sdd-cat07-security.md) — 07_セキュリティ管理
 - [sdd-cat08-backup-recovery.md](.github/agents/sdd-cat08-backup-recovery.md) — 08_バックアップ_リカバリ
 - [sdd-cat09-capacity.md](.github/agents/sdd-cat09-capacity.md) — 09_キャパシティ管理
-- [sdd-cat10-access.md](.github/agents/sdd-cat10-access.md) — 10_権限管理
+- [sdd-cat10-authz.md](.github/agents/sdd-cat10-authz.md) — 10_権限管理
 - [sdd-cat11-cost.md](.github/agents/sdd-cat11-cost.md) — 11_コスト管理
 - [sdd-cat12-governance.md](.github/agents/sdd-cat12-governance.md) — 12_統制管理
 
@@ -47,7 +58,7 @@
 ### サポートファイル
 - [docs/source](docs/source) — 暗黙知を仕様へ変換する際の変換元ドキュメント配置先
 - [docs/staging](docs/staging) — 変換時の中間データ一時置き場
-- [.github/skills](.github/skills) — SDD 品質ゲートスキル
+- [.github/skills](.github/skills) — SDD 品質ゲート／レビュースキル（5種）
 - [tools](tools) — 補助ツール格納先
 - [.gitignore](.gitignore) — Git 管理除外ルール
 - [CONTRIBUTING.md](CONTRIBUTING.md) — ブランチ、PR、タグ運用ルール
@@ -101,7 +112,7 @@
 **🚀 開始方法**
 
 1. Copilot Chat で [router-start.md](.github/prompts/router-start.md) を実行
-2. 「ヒアリング開始」と入力
+2. 「ヒアリングをはじめてください」と入力
 3. 対話的に 8 項目を回答
 4. 自動的に全 7 工程が生成される
 
@@ -151,7 +162,7 @@
 | 07 | セキュリティ管理 | sdd-cat07-security | 脆弱性対応、監査 |
 | 08 | バックアップ_リカバリ | sdd-cat08-backup-recovery | バックアップ戦略、DR |
 | 09 | キャパシティ管理 | sdd-cat09-capacity | 性能予測、サイジング |
-| 10 | 権限管理 | sdd-cat10-access | IAM、RBAC |
+| 10 | 権限管理 | sdd-cat10-authz | IAM、RBAC |
 | 11 | コスト管理 | sdd-cat11-cost | 予算管理、最適化 |
 | 12 | 統制管理 | sdd-cat12-governance | 監査、内部統制 |
 
@@ -159,7 +170,7 @@
 
 ### SDD パイプライン実行時
 - [router-start.md](.github/prompts/router-start.md) を開く
-- 「ヒアリング開始」と入力して対話を開始
+- 「ヒアリングをはじめてください」と入力して対話を開始
 - 8 項目に回答（ルーターが自動判定）
 - 生成されたファイルを確認
 
@@ -201,6 +212,12 @@
 
 - 実行主体は sdd-quality-gate（定義: [.github/agents/agents.md](.github/agents/agents.md)）
 - 上記 3 skill の結果を集約して quality-gate-report.md を出力
+
+### レビュー系 skills（オンデマンド実行）
+| skill | 目的 | 記録先 |
+|---|---|---|
+| sdd-accessibility-review | Web 成果物を WCAG 2.2 AA（+ JIS X 8341-3:2016）でレビュー | categories/<category>/05_verify/<request-folder>/accessibility-review.md |
+| sdd-isms-compliance-review | 成果物を ISO/IEC 27001:2022 附属書A統制でレビュー | categories/<category>/05_verify/<request-folder>/isms-compliance-review.md |
 
 ### 既存ドキュメント処理
 - `docs/source`: 暗黙知を仕様へ変換する場合のみ使用
